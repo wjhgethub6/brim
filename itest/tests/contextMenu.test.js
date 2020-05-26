@@ -24,7 +24,7 @@ describe("Test search mods via right-clicks", () => {
   beforeAll(async () => {
     app = newAppInstance(basename(__filename), ++testIdx)
     await startApp(app)
-    await ingestFile(app, "sample.pcap")
+    await ingestFile(app, "sample.tsv")
     await setSpan(app, "Whole Space")
   })
 

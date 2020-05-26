@@ -64,7 +64,7 @@ describe("Histogram tests", () => {
     // This is a data-sensitive test that assumes the histogram has particular
     // data loaded. There are inline comments that explain the test's flow.
     LOG.debug("Pre-login")
-    ingestFile(app, "sample.pcap")
+    ingestFile(app, "sample.tsv")
       .then(async () => {
         LOG.debug("Checking a histogram appears")
         // Verify that a histogram of at least *partial data* is
