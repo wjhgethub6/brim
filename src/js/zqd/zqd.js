@@ -108,12 +108,12 @@ export class ZQD {
     mkdirpSync(this.root, {recursive: true, mode: 0o755})
 
     const opts = {
-      stdio: "inherit"
+      stdio: ["inherit", "inherit", "inherit"]
     }
 
     const confFile = writeZqdConfigFile()
 
-    const args = [
+    let args = [
       "listen",
       "-l",
       this.addr(),
@@ -124,9 +124,18 @@ export class ZQD {
       "-zeekrunner",
       zeekRunnerCommand(this.zeekRunner)
     ]
-    log.info("spawning zqd:", zqdCommand(), args.join(" "))
 
-    this.zqd = spawn(zqdCommand(), args, opts)
+    if (process.platform !== "win32") {
+      const {readfd} = require("node-pipe").pipeSync()
+      opts.stdio.push(readfd)
+      args.push("-parent", opts.stdio.length - 1)
+    }
+    console.log("starting")
+    // log.info("spawning zqd:", zqdCommand(), args.join(" "))
+    log.info("spawning zqd:", "zqd", args.join(" "))
+
+    let z = "/Users/nibs/go/bin/zqd"
+    this.zqd = spawn(z, args, opts)
     this.zqd.on("error", (err) => {
       // XXX should notify renderers of error
       log.error("zqd spawn error", err)
