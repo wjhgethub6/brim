@@ -6,13 +6,18 @@ import {hasGroupByProc} from "../../lib/Program"
 import Log from "../../models/Log"
 import menu from "./"
 import {RightClickBuilder} from "src/js/types"
+import {MenuItemConstructorOptions} from "electron"
 
 export default function searchFieldContextMenu(
   program: string,
   columns: string[],
   space: Space
 ): RightClickBuilder {
-  return function(field: $Field, log: Log, compound: boolean) {
+  return function(
+    field: $Field,
+    log: Log,
+    compound: boolean
+  ): MenuItemConstructorOptions[] {
     const isTime = field.type === "time"
     const isConn = log.isPath("conn")
     const isGroupBy = hasGroupByProc(program)

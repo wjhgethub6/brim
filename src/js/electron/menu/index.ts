@@ -5,15 +5,13 @@ import actions from "./actions"
 import appMenu from "./appMenu"
 import detailFieldContextMenu from "./detailFieldContextMenu"
 import searchFieldContextMenu from "./searchFieldContextMenu"
-import spaceContextMenu from "./spaceContextMenu"
 
 export type $MenuItem = MenuItemConstructorOptions
-
 export type $Menu = $MenuItem[]
 
 function setMenu(manager: $WindowManager, store: any, session: any) {
   function send(channel, ...args) {
-    const win = BrowserWindow.getFocusedWindow()
+    let win = BrowserWindow.getFocusedWindow()
     if (win && win.webContents) win.webContents.send(channel, ...args)
   }
 
@@ -27,6 +25,5 @@ export default {
   actions,
   searchFieldContextMenu,
   detailFieldContextMenu,
-  spaceContextMenu,
   separator: (): MenuItemConstructorOptions => ({type: "separator"})
 }

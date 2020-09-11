@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux"
-import React, {useRef, HTMLProps} from "react"
+import React, {useRef} from "react"
 import styled from "styled-components"
 
 import {XLeftPaneExpander} from "./LeftPaneExpander"
@@ -13,7 +13,6 @@ import Layout from "../state/Layout"
 import Pane from "./Pane"
 import SavedSpacesList from "./SavedSpacesList"
 import Spaces from "../state/Spaces"
-import menu from "../electron/menu"
 import useDrag from "./hooks/useDrag"
 import usePopupMenu from "./hooks/usePopupMenu"
 
@@ -113,7 +112,7 @@ const StyledViewSelect = styled.div`
   }
 `
 
-const DragAnchor = styled.div<HTMLProps<HTMLDivElement>>`
+const DragAnchor = styled.div`
   position: absolute;
   background: transparent;
   pointer-events: all !important;
@@ -170,7 +169,6 @@ export function LeftPane() {
   const width = useSelector(Layout.getLeftSidebarWidth)
   const id = useSelector(Current.getConnectionId)
   const spaces = useSelector(Spaces.getSpaces(id))
-  const spaceContextMenu = menu.spaceContextMenu(id)
 
   const showHistory = useSelector(Layout.getHistoryIsOpen)
   const showSpaces = useSelector(Layout.getSpacesIsOpen)
@@ -230,10 +228,7 @@ export function LeftPane() {
           <AddSpaceButton />
         </SectionHeader>
         <SectionContents show={showSpaces}>
-          <SavedSpacesList
-            spaces={spaces}
-            spaceContextMenu={spaceContextMenu}
-          />
+          <SavedSpacesList spaces={spaces} />
         </SectionContents>
         {showSpaces && <DragAnchor {...dragFunc()} />}
       </StyledSection>
