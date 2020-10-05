@@ -36,7 +36,7 @@ export default function windowManager() {
         return this.openWindow("search")
       for (const id of session.order) {
         const {name, size, position, state} = session.windows[id]
-        console.log(position)
+
         this.openWindow(name, {size, position, id})
         this.updateWindow(id, {state})
       }
@@ -126,7 +126,7 @@ export default function windowManager() {
       const id = params.id
 
       const ref = tron
-        .window(name, params)
+        .window(name, {...params, size: [500, 500], position: [-500, 0]})
         .on("focus", () => {
           if (!isQuitting) windows[id].lastFocused = new Date().getTime()
         })
