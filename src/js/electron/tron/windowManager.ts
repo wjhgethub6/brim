@@ -1,4 +1,4 @@
-import {BrowserWindow, ipcMain} from "electron"
+import {BrowserWindow, ipcMain, screen} from "electron"
 
 import {NewTabSearchParams} from "../ipc/windows/messages"
 import {SessionState} from "./formatSessionState"
@@ -35,6 +35,8 @@ export default function windowManager() {
         return this.openWindow("search")
       for (const id of session.order) {
         const {name, size, position, state} = session.windows[id]
+        console.log(position)
+        console.log(screen.getAllDisplays())
         this.openWindow(name, {size, position, id})
         this.updateWindow(id, {state})
       }
