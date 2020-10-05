@@ -31,12 +31,12 @@ export default function windowManager() {
 
   return {
     init(session?: SessionState | null | undefined) {
+      console.log(screen.getAllDisplays())
       if (!session || (session && session.order.length === 0))
         return this.openWindow("search")
       for (const id of session.order) {
         const {name, size, position, state} = session.windows[id]
         console.log(position)
-        console.log(screen.getAllDisplays())
         this.openWindow(name, {size, position, id})
         this.updateWindow(id, {state})
       }
