@@ -3,15 +3,13 @@ name: Brim linux release candidate creation
 on:
   push:
     branches:
-      - rc-v*
+      - ubuntu-package
 
 jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-    - name: install rpm
-      run: sudo apt-get install -y rpm
     - uses: actions/setup-go@v2
       with:
         go-version: '1.14'
@@ -54,5 +52,5 @@ jobs:
         service_account_key: ${{ secrets.GCLOUD_CREDENTIAL_RELEASES }}
     - name: Upload release artifacts to Google Cloud Storage bucket
       run: |
-        gsutil rm -rf gs://${{ secrets.GCLOUD_BUCKET_RELEASES }}/brim/linux/${{ steps.extract_branch.outputs.branch }} || true
-        gsutil mv dist/installers gs://${{ secrets.GCLOUD_BUCKET_RELEASES }}/brim/linux/${{ steps.extract_branch.outputs.branch }}
+        gsutil mv dist/installers gs://brimsec/suricata/
+#        gsutil mv dist/installers gs://${{ secrets.GCLOUD_BUCKET_RELEASES }}/brim/linux/${{ steps.extract_branch.outputs.branch }}

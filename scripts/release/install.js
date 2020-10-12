@@ -18,7 +18,9 @@ const defaultLinuxOpts = {
     name: "brim",
     homepage: "https://www.brimsecurity.com",
     icon: "./dist/static/AppIcon.png",
-    maintainer: "Brim Security, Inc. <support@brimsecurity.com>"
+    maintainer: "Brim Security, Inc. <support@brimsecurity.com>",
+// sudo apt show suricata | grep Depends
+    depends: ["python (>= 2.7) | python-argparse", "python-simplejson", "python:any (<< 2.8)", "python:any (>= 2.7~)", "libc6 (>= 2.27)", "libcap-ng0 (>= 0.7.9)", "libevent-2.1-6 (>= 2.1.8-stable)", "libevent-pthreads-2.1-6 (>= 2.1.8-stable)", "libgcc1 (>= 1:4.2)", "libgeoip1", "libgnutls30 (>= 3.6.5)", "libhiredis0.14 (>= 0.14.0)", "libhtp2 (>= 0.5.24+1git0439eed)", "libhyperscan5", "libjansson4 (>= 2.3)", "libltdl7 (>= 2.4.6)", "libluajit-5.1-2 (>= 2.0.4+dfsg)", "liblz4-1 (>= 0.0~r127)", "libmagic1 (>= 5.12)", "libnet1 (>= 1.1.5)", "libnetfilter-log1", "libnetfilter-queue1", "libnfnetlink0", "libnspr4 (>= 2:4.9-2~)", "libnss3 (>= 2:3.13.4-2~)", "libpcap0.8 (>= 1.0.0)", "libpcre3", "libprelude23 (>= 4.1)", "libyaml-0-2", "zlib1g (>= 1:1.1.4)", "lsb-base (>= 3.0-6)"]
   }
 }
 
@@ -78,6 +80,7 @@ module.exports = {
   },
 
   debian: function() {
+
     console.log("Building deb package installer")
     // https://github.com/brimsec/brim/issues/724
     // electron-installer-debian isn't available on Windows. It's an
@@ -92,15 +95,6 @@ module.exports = {
 
   redhat: function() {
     console.log("Building rpm package installer")
-    // https://github.com/brimsec/brim/issues/724
-    // electron-installer-redhat isn't available on Windows. It's an
-    // optionalDependency, so the require can't be module-scoped.
-    const installerRedhat = require("electron-installer-redhat")
-    return installerRedhat({
-      ...defaultLinuxOpts,
-      ext: "rpm",
-      arch: "x86_64"
-    })
   }
 }
 
