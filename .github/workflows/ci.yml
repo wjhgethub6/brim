@@ -69,63 +69,6 @@ jobs:
           name: linux-release
           path: ./dist/installers
 
-  integration_test_centos:
-    runs-on: ubuntu-18.04
-    strategy:
-      matrix:
-        node-version: [12.x]
-    container:
-      image: centos:8
-      env:
-        # This environment variable causes chrome to run with no sandbox- needed
-        # whenever chrome is run as root.
-        APPVEYOR: true
-    needs: build
-    steps:
-      - run: dnf install -y xorg-x11-server-Xvfb git nss-tools pulseaudio unzip make
-      - run: dnf --enablerepo=PowerTools install -y mesa-libgbm-devel
-      - run: dnf install -y atk.x86_64 cups-libs.x86_64 gtk3.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXrandr.x86_64 libXScrnSaver.x86_64 libXtst.x86_64 pango.x86_64 xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-fonts-cyrillic xorg-x11-fonts-misc xorg-x11-fonts-Type1 xorg-x11-utils
-      - run: dnf group install -y "Development Tools"
-      - run: dnf install -y python3
-      - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-        with:
-          go-version: "1.14"
-      - uses: denolib/setup-deno@v2
-        with:
-          deno-version: v1.x
-      - name: setup node version ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Set NPM Cache Directory
-        id: set-npm-cache-dir
-        run: echo "::set-output name=npm_cache_dir::$(npm config get cache)"
-      - name: Clear Extraneous Runner Cache
-        run: rm -rf "${NPM_CACHE:?}"
-        env:
-          NPM_CACHE: ${{ steps.set-npm-cache-dir.outputs.npm_cache_dir }}
-      - name: Cache node modules
-        uses: actions/cache@v1
-        env:
-          cache-name: cache-node-modules-ci-v4
-        with:
-          path: ${{ steps.set-npm-cache-dir.outputs.npm_cache_dir }}
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
-      - run: npm install --no-audit
-      - run: npm run install:zealot
-      - name: Download rpm package
-        uses: actions/download-artifact@v1
-        with:
-          name: linux-release
-      - name: Integration Tests (Centos 8)
-        run: |
-          dnf install -y ./linux-release/brim_x86_64.rpm
-          xvfb-run -d -s "-screen 0 1280x1024x24" npm run itest -- --ci --forceExit
-
   integration_test:
     runs-on: ${{ matrix.os }}
     strategy:
