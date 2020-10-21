@@ -10,6 +10,7 @@ import sendTo from "../ipc/sendTo"
 import tron from "./"
 import {stack} from "../window/dimens"
 import {last} from "lodash"
+import log from "electron-log"
 
 export type WindowName = "search" | "about" | "detail"
 export type $WindowManager = ReturnType<typeof windowManager>
@@ -181,15 +182,28 @@ export default function windowManager() {
     },
 
     moveToCurrentDisplay() {
+      const s = screen
+        .getAllDisplays()
+        .map((s) => s.workArea)
+        .map((a, i) => `Screen ${i}: ${JSON.stringify(a)}`)
+        .join("\n")
       const point = screen.getCursorScreenPoint()
       const bounds = screen.getDisplayNearestPoint(point).workArea
       const {x, y} = bounds
 
       let prev = [x, y]
-      this.getWindows().forEach(({ref: win}: WindowState) => {
+
+      log.debug(`
+----- Move to current display ------
+${s}
+
+Destination screen: ${JSON.stringify(bounds)}
+`)
+      this.getWindows().forEach(({ref: win}: WindowState, index: number) => {
         const [width, height] = win.getSize()
         const [x, y] = prev
         const next = stack({x, y, width, height}, bounds, 25)
+        log.debug(`Moving window: ${index} to ${JSON.stringify(next)}`)
         win.setBounds(next)
         prev = [next.x, next.y]
       })

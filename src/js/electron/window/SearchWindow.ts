@@ -1,4 +1,5 @@
 import {BrowserWindow, screen} from "electron"
+import log from "electron-log"
 import {Dimens, getWindowDimens} from "./dimens"
 
 const DEFAULT_DIMENS = {
@@ -22,9 +23,19 @@ export class SearchWindow {
       .getAllDisplays()
       .map((s) => s.workArea)
   ) {
+    const s = screens
+      .map((a, i) => `Screen ${i}: ${JSON.stringify(a)}`)
+      .join("\n")
+    const d = getWindowDimens(dimens, DEFAULT_DIMENS, screens)
+    log.debug(
+      `---------- Opening a search page --------
+${s}
+This window: ${JSON.stringify(d)}
+`
+    )
     this.id = id
     this.ref = new BrowserWindow({
-      ...getWindowDimens(dimens, DEFAULT_DIMENS, screens),
+      ...d,
       titleBarStyle: "hidden",
       resizable: true,
       minWidth: 480,
