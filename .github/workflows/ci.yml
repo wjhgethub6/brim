@@ -108,8 +108,6 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
       - run: npm install --no-audit
       - run: npm run build
-# Disabling using built & installed app for now;
-# see brim#1145
       - name: Build and Install MacOS DMG
         if: runner.os == 'macOS'
         run: |
@@ -147,3 +145,4 @@ jobs:
         with:
           name: artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
           path: /var/tmp/brimsec/itest
+

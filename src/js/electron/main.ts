@@ -1,6 +1,5 @@
 import {appPathSetup} from "./appPathSetup"
 import Prefs from "../state/Prefs"
-import formatSessionState from "./tron/formatSessionState"
 import userTasks from "./userTasks"
 
 // app path and log setup should happen before other imports.
@@ -25,6 +24,7 @@ import {ZQD} from "../zqd/zqd"
 import electronIsDev from "./isDev"
 import {setupAutoUpdater} from "./autoUpdater"
 import log from "electron-log"
+import {handleQuit} from "./quitter"
 
 async function main() {
   if (handleSquirrelEvent(app)) return
@@ -42,6 +42,7 @@ async function main() {
   zqdMainHandler(zqd)
   windowsMainHandler(winMan)
   globalStoreMainHandler(store, winMan)
+  handleQuit(winMan, store, session, zqd)
 
   // autoUpdater should not run in dev, and will fail if the code has not been signed
   if (!electronIsDev) {
@@ -52,35 +53,30 @@ async function main() {
     }
   }
 
+  app.on("second-instance", (e, argv) => {
+    for (let arg of argv) {
+      switch (arg) {
+        case "--new-window":
+          winMan.openWindow("search")
+          break
+        case "--move-to-current-display":
+          winMan.moveToCurrentDisplay()
+          break
+      }
+    }
+  })
+
   async function onReady() {
     if (electronIsDev) await installExtensions()
-    if (app.commandLine.hasSwitch("new-window")) {
-      winMan.openWindow("search")
-    } else {
-      winMan.init(data)
-    }
+    winMan.init(data)
   }
 
   // The app might be ready by the time we get here due to async stuff above
   if (app.isReady()) onReady()
   else app.on("ready", onReady)
 
-  app.on("before-quit", () => {
-    winMan.isQuitting(true)
-  })
-
-  app.on("quit", () => {
-    const data = formatSessionState(winMan.getState(), store.getState())
-    session.save(data)
-    zqd.close()
-  })
-
   app.on("activate", () => {
     if (!(winMan.count() === 0)) winMan.init()
-  })
-
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin" || winMan.isQuitting()) app.quit()
   })
 
   app.on("web-contents-created", (event, contents) => {
@@ -101,7 +97,11 @@ async function main() {
     })
   })
 }
-
-main().then(() => {
-  if (process.env.BRIM_ITEST === "true") require("./itest")
-})
+const gotTheLock = app.requestSingleInstanceLock()
+if (gotTheLock) {
+  main().then(() => {
+    if (process.env.BRIM_ITEST === "true") require("./itest")
+  })
+} else {
+  app.quit()
+}
