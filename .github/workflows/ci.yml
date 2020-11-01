@@ -1,5 +1,5 @@
 name: Brim CI
-# Run NUM=10
+# Run NUM=1
 on:
   pull_request:
   push:
@@ -123,6 +123,10 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: linux-release
+      - name: Start top
+        run: |
+          mkdir -p /var/tmp/brimsec/itest
+          top > /var/tmp/brimsec/itest/top.txt &
       - name: Integration Tests (Debian Linux)
         if: runner.os == 'Linux'
         run: |
@@ -141,7 +145,6 @@ jobs:
         env:
           WORKSPACE: /var/tmp/brimsec
       - uses: actions/upload-artifact@v1
-        if: failure()
         with:
           name: artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
           path: /var/tmp/brimsec/itest
