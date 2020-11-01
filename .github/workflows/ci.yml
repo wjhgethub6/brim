@@ -126,6 +126,7 @@ jobs:
       - name: Start top
         run: |
           top > /var/tmp/top.txt &
+          sleep 5
           ls -al /var/tmp
       - name: Integration Tests (Debian Linux)
         if: runner.os == 'Linux'
@@ -150,6 +151,7 @@ jobs:
           name: artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
           path: /var/tmp/brimsec/itest
       - uses: actions/upload-artifact@v1
+        if: always()
         with:
           name: top
           path: /var/tmp/top.txt
