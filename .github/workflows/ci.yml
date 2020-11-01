@@ -125,8 +125,8 @@ jobs:
           name: linux-release
       - name: Start top
         run: |
-          mkdir -p /var/tmp/brimsec/itest
-          top > /var/tmp/brimsec/itest/top.txt &
+          top > /var/tmp/top.txt &
+          ls -al /var/tmp
       - name: Integration Tests (Debian Linux)
         if: runner.os == 'Linux'
         run: |
@@ -145,7 +145,11 @@ jobs:
         env:
           WORKSPACE: /var/tmp/brimsec
       - uses: actions/upload-artifact@v1
+        if: failure()
         with:
           name: artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
           path: /var/tmp/brimsec/itest
-
+      - uses: actions/upload-artifact@v1
+        with:
+          name: top
+          path: /var/tmp/top.txt
