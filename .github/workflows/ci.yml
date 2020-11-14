@@ -1,5 +1,5 @@
 name: Brim CI
-# Run NUM=0
+# Run NUM=1
 on:
   pull_request:
   push:
